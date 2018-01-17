@@ -23,7 +23,7 @@ class GameManager(object):
         self.gui.run()
 
     def end_game(self, winner):
-        self.gui._output_winner(winner)
+        self.gui.show_winning(self.game.get_board(), self.game.get_winning_sequence(), winner)
         # self.communication_manager.send_winner(winner)
         self.gui.shutdown()
 
@@ -45,7 +45,7 @@ class GameManager(object):
             winner = self.game.get_winner()
             # self.__switch_players()
             if winner is not None:
-                self.end_game(self.player)
+                self.end_game(winner)
 
         except ValueError as e:
             self.gui.output_error(str(e))
@@ -55,6 +55,7 @@ class GameManager(object):
     def handle_opponent_choice(self, column):
         self.game.make_move(column)
         self.gui.output_board(self.game.get_board())
-        if self.game.get_winner() == self.opponent:
-            self.end_game(self.opponent)
+        winner = self.game.get_winner()
+        if winner is not None:
+            self.end_game(winner)
 

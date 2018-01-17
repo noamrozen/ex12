@@ -5,19 +5,13 @@ from tkinter import messagebox
 from gui_config import *
 
 
-
-
 #resizeable
 
-
 class Gui:
-    num_col = 7
-    num_row = 6
     PLAYER_ONE = 0
     PLAYER_ONE_COLOR = "indian red1"
     PLAYER_TWO_COLOR = "lightgoldenrod1"
     PLAYER_TWO = 1
-
 
     def __init__(self,row_num, col_num):
         # super(TkinterGui, self).__init__()
@@ -27,9 +21,9 @@ class Gui:
         # self.__communicator = Communicator(parent, port, ip)
         # self.__communicator.connect()
         # self.__communicator.bind_action_to_message(self.__handle_message)
-        self.__place_widgets()
         self.num_row = row_num
         self.num_col = col_num
+        self.__place_widgets()
 
 
 
@@ -68,23 +62,28 @@ class Gui:
         self.output_board(board)
         if winner == self.PLAYER_ONE:
             winner_color = self.PLAYER_ONE_COLOR
-        else:
+        elif winner == self.PLAYER_TWO:
             winner_color = self.PLAYER_TWO_COLOR
+        else:
+            self.output_draw()
+            return
         for coord in list_coord:
             self._columns_list[coord[1]].create_oval(INIT_X0, INIT_X0
                 + coord[0] * OVAL_WIDTH, INIT_X1, INIT_Y1 +
                 coord[0] * OVAL_WIDTH, width=WIN_WIDTH ,fill=winner_color)
-        self._columns_list[coord[1]].pack()
+            self._columns_list[coord[1]].pack()
         self._output_winner(winner)
 
+    @staticmethod
+    def output_draw():
+        messagebox.showinfo("It's a draw!")
 
     def _output_winner(self, winner):
         messagebox.showinfo("We Have A winner!",
                             "and the winner is....   %s" % winner)
-        self._shutdown()
+        self.shutdown()
 
-
-    def _shutdown(self):
+    def shutdown(self):
         self._parent.destroy()
 
     def output_board(self, board):
@@ -92,15 +91,20 @@ class Gui:
             cur_col = board[:,col]
             for row in range(len(cur_col)):
                 if cur_col[row] == self.PLAYER_ONE:
-                    color = gui.PLAYER_ONE_COLOR
+                    color = self.PLAYER_ONE_COLOR
+                elif cur_col[row] == self.PLAYER_TWO:
+                    color = self.PLAYER_TWO_COLOR
                 else:
-                    color = gui.PLAYER_TWO_COLOR
+                    continue
                 self._columns_list[col].create_oval(INIT_X0, INIT_X0+row*OVAL_WIDTH,
                 INIT_X1, INIT_Y1+row*OVAL_WIDTH, width=0, fill=color)
 
 
     def output_error(self, error_text):
          messagebox.showinfo("ERROR!", error_text)
+
+    def run(self):
+        self._parent.mainloop()
 
 
 if __name__ == "__main__":
@@ -110,7 +114,7 @@ if __name__ == "__main__":
     port = 8000
     server = True
     if server:
-        gui = Gui(root, port)
+        self = Gui(root, port)
         root.title("Server")
         arr = np.array([[1,0,1,0,1,0,1]])
         gui.output_board(arr)

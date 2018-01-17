@@ -15,10 +15,13 @@ class Game:
 
     def __init__(self):
         # choosing the first player randomly
-        self.__current_player = random.choice([self.PLAYER_ONE,self.PLAYER_TWO])
+        self.__current_player = self.PLAYER_ONE
         # initiating the board with "-1"
         self.__board_mtx = np.full((self.ROWS_NUM,self.COLUMN_NUM),self.EMPTY)
         self.__win_seq = []
+
+    def get_winning_sequence(self):
+        return self.__win_seq
 
     @staticmethod
     def __get_lowest_empty(board_column):
@@ -120,7 +123,7 @@ class Game:
             if winner is not None:
                 coord_list = []
                 for i in index_list:
-                    coord = (first_coord[0] + 1 * i, first_coord[1] + 1 * i)
+                    coord = (first_coord[0] + 1 * i, self.COLUMN_NUM - first_coord[1] - 1 * i - 1)
                     coord_list.append(coord)
                 self.__win_seq = coord_list
                 return winner
