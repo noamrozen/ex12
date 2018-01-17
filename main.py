@@ -1,6 +1,6 @@
 from game_manager import  GameServer
 from gui import Gui
-from communication_protocol import ClientCommunicationHandler, ServerCommunicationHandler
+from communication_protocol import SocketCommunicatorHandler
 from communicator import Communicator
 from game import Game
 
@@ -15,12 +15,8 @@ def main():
     gui = Gui()
     communicator = Communicator(root=gui._parent, ip=ip, port=port)
 
-    if roll == SERVER:
-        communication_handler = ServerCommunicationHandler(communicator)
-        game_manager = GameServer(gui, communication_handler, Game())
-    else:
-        communication_handler = ClientCommunicationHandler(communicator)
-        game_manager = GameClient(gui, communication_handler)
+    communication_handler = SocketCommunicatorHandler(communicator)
+    game_manager = GameServer(gui, communication_handler, Game())
 
     game_manager.run()
 
