@@ -84,10 +84,10 @@ class Gui:
     def _output_winner(self, winner):
         messagebox.showinfo("We Have A winner!",
                             "and the winner is....   %s" % winner)
-        self._shutdown()
+        self.shutdown()
 
 
-    def _shutdown(self):
+    def shutdown(self):
         self._parent.destroy()
 
     def output_board(self, board):

@@ -10,15 +10,14 @@ CLIENT = "client"
 
 def main():
     roll = SERVER
-    ip = "0.0.0.0"
+    ip = "172.29.106.52"
     port = 8000
     gui = Gui()
-    communicator = Communicator(root=gui._parent, port=port)
+    communicator = Communicator(root=gui._parent, ip=ip, port=port)
     communicator.connect()
-    # communicator
 
     communication_handler = SocketCommunicatorHandler(communicator)
-    game_manager = GameManager(gui, communication_handler, Game(), player=Game.PLAYER_ONE)
+    game_manager = GameManager(gui, communication_handler, Game(), Game.PLAYER_TWO)
 
     game_manager.run()
 

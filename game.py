@@ -6,7 +6,7 @@ class Game:
 
     ROWS_NUM = 6
     COLUMN_NUM = 7
-    SEQ_FOR_WIN = 3
+    SEQ_FOR_WIN = 4
     PLAYER_ONE = 0
     PLAYER_TWO = 1
     DRAW = 2

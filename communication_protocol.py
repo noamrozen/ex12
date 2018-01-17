@@ -19,7 +19,8 @@ class Message(object):
         )
 
     @classmethod
-    def from_json(cls, content_dict):
+    def from_json(cls, content):
+        content_dict = json.loads(content)
         if content_dict.get("message_type") != cls.MESSAGE_TYPE or content_dict.get("content") is None:
             raise ValueError("illegal message format: %s" % str(content_dict))
         return cls(content_dict["content"])
@@ -64,7 +65,7 @@ class SocketCommunicatorHandler(object):
     def set_client_choice_handler(self, client_choice_handler):
         def __handle_client_message(client_message):
             message = ChoiceMessage.from_json(client_message)
-            client_choice_handler(message.content)
+            client_choice_handler(message.column)
 
         self.__communicator.bind_action_to_message(__handle_client_message)
 

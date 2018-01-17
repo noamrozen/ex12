@@ -1,4 +1,4 @@
-from communication_protocol import ErrorMessage, UpdateMessage, WinnerMessage
+# from communication_protocol import ErrorMessage, UpdateMessage, WinnerMessage
 
 BLOCKED_CELL_ERROR_MSG = "Cell is blocked!"
 NOT_YOUR_TURN_ERROR_MSG = "It is not your turn!"
@@ -13,10 +13,10 @@ class GameManager(object):
         # we might want a Player object, containing name, ip and other details about the player
         self.player = player
         self.opponent = self.__get_opponent(player)
-        # self.communication_manager.set_client_choice_handler(self.handle_client_choice)
+        self.communication_manager.set_client_choice_handler(self.handle_opponent_choice)
 
     def __get_opponent(self, player):
-        return ({self.game.PLAYER_ONE, self.game.PLAYER_TWO} - {player})[0]
+        return ({self.game.PLAYER_ONE, self.game.PLAYER_TWO} - {player}).pop()
 
     def run(self):
         self.gui.set_collumn_choice_handler(self.handle_choice)
@@ -35,14 +35,15 @@ class GameManager(object):
 
     def handle_choice(self, column):
         if not self.game.get_current_player() == self.player:
-            raise ValueError(NOT_YOUR_TURN_ERROR_MSG)
+            self.gui.output_error(NOT_YOUR_TURN_ERROR_MSG)
+            return
 
         try:
             self.game.make_move(column)
-            # self.communication_manager.send_choice(column)
+            self.communication_manager.send_choice(column)
             self.gui.output_board(self.game.get_board())
             winner = self.game.get_winner()
-            self.__switch_players()
+            # self.__switch_players()
             if winner is not None:
                 self.end_game(self.player)
 
@@ -53,7 +54,7 @@ class GameManager(object):
 
     def handle_opponent_choice(self, column):
         self.game.make_move(column)
-        self.gui.output_board(self.game.board)
+        self.gui.output_board(self.game.get_board())
         if self.game.get_winner() == self.opponent:
             self.end_game(self.opponent)
 
