@@ -2,7 +2,7 @@ import tkinter as tk
 from communicator import Communicator
 import numpy as np
 from tkinter import messagebox
-import time
+from gui_config import *
 
 
 
@@ -13,18 +13,13 @@ import time
 class Gui:
     num_col = 7
     num_row = 6
-    INIT_Y0 = 3
-    INIT_Y1 = 73
-    INIT_X0 = 3
-    INIT_X1 = 83
-    OVAL_WIDTH = 80
     PLAYER_ONE = 0
     PLAYER_ONE_COLOR = "indian red1"
     PLAYER_TWO_COLOR = "lightgoldenrod1"
     PLAYER_TWO = 1
-    COL_WIDTH = 100
 
-    def __init__(self):
+
+    def __init__(self,row_num, col_num):
         # super(TkinterGui, self).__init__()
         self._parent = tk.Tk()
         # self._canvas = tk.Canvas(self._parent,width = 2000, height = 2000, bg = "white")
@@ -33,50 +28,52 @@ class Gui:
         # self.__communicator.connect()
         # self.__communicator.bind_action_to_message(self.__handle_message)
         self.__place_widgets()
+        self.num_row = row_num
+        self.num_col = col_num
+
+
 
     def __place_widgets(self):
         ## create config for MN
 
-        self._title = tk.Canvas(self._parent, width = 690, height = 60,bg="grey")
+        self._title = tk.Canvas(self._parent, width = CAN_W, height = CAN_H,bg = TITLE_BG)
         self._title.pack(side = "top")
-        self._title.create_text(710 / 2,60 / 2,text="Four In A Row", fill="brown4",font=("Comic Sans MS", 30,"bold"))
+        self._title.create_text(WIN_W / 2,TITLE_H / 2,text= TEXT_TITLE, fill=TEXT_FILL ,font=(FONT, FINT_SIZE,BOLD_FONT))
         self._columns_list = []
-        self._upper_frame = tk.Canvas(self._parent, width=700, height=20,
-          highlightbackground= "black",bd=2,highlightthickness=1, bg="NavajoWhite4")
+        self._upper_frame = tk.Canvas(self._parent, width=FRAME_W, height=FRAME_H,
+          highlightbackground= U_FRAME ,bd=FRAME_BD,highlightthickness=TK, bg=BG_COLOR)
         self._upper_frame.pack()
         for col in reversed(list(range(self.num_col))):
             button = tk.Button(self._upper_frame, command =lambda c=col: self.__set_collumn_choice_handler(c))
-            button.configure(width=13, activebackground="grey", bg = "NavajoWhite4", borderwidth=1)
-            button.pack(side="right",  fill ="both")
+            button.configure(width=BT_W, activebackground=TITLE_BG, bg = BG_COLOR, borderwidth=TK)
+            button.pack(side="right",  fill =FILL_BOTH)
         for col in range(self.num_col):
-            self._columns_list.append(tk.Canvas(self._parent, width=91, height=480,
-             highlightbackground="NavajoWhite4" ,bd=2,highlightthickness=2, bg="NavajoWhite4"))
+            self._columns_list.append(tk.Canvas(self._parent, width=COL_W, height=COL_H,
+             highlightbackground=BG_COLOR ,bd=FRAME_BD,highlightthickness=FRAME_BD, bg=BG_COLOR))
             self._columns_list[-1].pack(side = "left")
             for row in range(self.num_row):
-                self._columns_list[-1].create_oval(self.INIT_X0, self.INIT_X0+row*self.OVAL_WIDTH,
-                self.INIT_X1, self.INIT_Y1+row*self.OVAL_WIDTH, width=0, fill='grey')
+                self._columns_list[-1].create_oval(INIT_X0, INIT_X0+row*OVAL_WIDTH,
+                INIT_X1, INIT_Y1+row*OVAL_WIDTH, width=0, fill=TITLE_BG)
 
     def __set_collumn_choice_handler(self, column):
         self.__game_handler(column)
         # self._communicator.send_message(column)
 
-    def run(self):
-        self._parent.mainloop()
 
     def set_collumn_choice_handler(self, handler):
         self.__game_handler = handler
 
 
-    def show_winning(self,board,list_coord, winner):
+    def show_winning(self, board, list_coord, winner):
         self.output_board(board)
         if winner == self.PLAYER_ONE:
             winner_color = self.PLAYER_ONE_COLOR
         else:
             winner_color = self.PLAYER_TWO_COLOR
         for coord in list_coord:
-            self._columns_list[coord[1]].create_oval(self.INIT_X0,self.INIT_X0
-                + coord[0] * self.OVAL_WIDTH,self.INIT_X1,self.INIT_Y1 +
-                coord[0] * self.OVAL_WIDTH, width=3,fill=winner_color)
+            self._columns_list[coord[1]].create_oval(INIT_X0, INIT_X0
+                + coord[0] * OVAL_WIDTH, INIT_X1, INIT_Y1 +
+                coord[0] * OVAL_WIDTH, width=WIN_WIDTH ,fill=winner_color)
         self._columns_list[coord[1]].pack()
         self._output_winner(winner)
 
@@ -84,10 +81,10 @@ class Gui:
     def _output_winner(self, winner):
         messagebox.showinfo("We Have A winner!",
                             "and the winner is....   %s" % winner)
-        self.shutdown()
+        self._shutdown()
 
 
-    def shutdown(self):
+    def _shutdown(self):
         self._parent.destroy()
 
     def output_board(self, board):
@@ -95,13 +92,11 @@ class Gui:
             cur_col = board[:,col]
             for row in range(len(cur_col)):
                 if cur_col[row] == self.PLAYER_ONE:
-                    color = self.PLAYER_ONE_COLOR
-                elif cur_col[row] == self.PLAYER_TWO:
-                    color = self.PLAYER_TWO_COLOR
+                    color = gui.PLAYER_ONE_COLOR
                 else:
-                    continue
-                self._columns_list[col].create_oval(self.INIT_X0, self.INIT_X0+row*self.OVAL_WIDTH,
-                self.INIT_X1, self.INIT_Y1+row*self.OVAL_WIDTH, width=0, fill=color)
+                    color = gui.PLAYER_TWO_COLOR
+                self._columns_list[col].create_oval(INIT_X0, INIT_X0+row*OVAL_WIDTH,
+                INIT_X1, INIT_Y1+row*OVAL_WIDTH, width=0, fill=color)
 
 
     def output_error(self, error_text):
