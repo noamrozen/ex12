@@ -4,20 +4,22 @@ import numpy as np
 
 class Game:
 
-    ROWS_NUM = 3
-    COLUMN_NUM = 4
-    # CR: Why 3 and not 4?
+    ROWS_NUM = 6
+    COLUMN_NUM = 7
     SEQ_FOR_WIN = 3
     PLAYER_ONE = 0
     PLAYER_TWO = 1
     DRAW = 2
     EMPTY = -1
+    ILLEGAL_MOVE = "Illegal move"
 
     def __init__(self):
         # choosing the first player randomly
-        self.__current_player = random.choice([self.PLAYER_ONE, self.PLAYER_TWO])
+        # self.__current_player = random.choice([self.PLAYER_ONE,self.PLAYER_TWO])
+        self.__current_player = self.PLAYER_ONE
         # initiating the board with "None"
-        self.__board_mtx = np.full((self.ROWS_NUM, self.COLUMN_NUM), self.EMPTY)
+        self.__board_mtx = np.full((self.ROWS_NUM,self.COLUMN_NUM),self.EMPTY)
+
 
     @staticmethod
     def __get_lowest_empty(board_column):
@@ -27,7 +29,6 @@ class Game:
         for index in range(len(board_column)):
             if board_column[index] != Game.EMPTY:
                 return str(index - 1)
-        # CR: Why is this string?
         return str(len(board_column)-1)
 
     def make_move(self, column):
@@ -35,17 +36,15 @@ class Game:
         board_mtx = self.get_board()
         board_column = board_mtx[:, column]
         if self.get_winner():
-            raise Exception("Illegal move")
+            raise ValueError("the game is over")
+            # raise Exception(self.ILLEGAL_MOVE)
         if not self.__get_lowest_empty(board_column):
-            # CR: Debugging? remove this after debug
-            print("1")
-            # CR: Why not put this inside __get_lowest_empty?
-            raise Exception("Illegal move")
+            raise ValueError("column is full!")
+            # raise Exception(self.ILLEGAL_MOVE)
         if column < 0 or column > self.COLUMN_NUM:
-            print("2")
-            raise Exception("Illegal move")
+            raise ValueError("column %s out of range" % column)
+            # raise Exception(self.ILLEGAL_MOVE)
         else:
-            # CR: Why call to same method twice?
             index = int(self.__get_lowest_empty(board_column))
             self.__board_mtx[index, column] = player
             if player == self.PLAYER_ONE:
@@ -53,8 +52,7 @@ class Game:
             else:
                 self.__current_player = self.PLAYER_ONE
 
-    # CR: method should be private
-    def search_winner(self, list):  # CR: list is a saved word
+    def search_winner(self, list):
         player_one_counter = 0
         player_two_counter = 0
         for i in range(len(list)):
@@ -65,7 +63,6 @@ class Game:
                 player_two_counter += 1
                 player_one_counter = 0
             if player_one_counter == self.SEQ_FOR_WIN:
-                # CR: Why cast to string?
                 return str(self.PLAYER_ONE)
             if player_two_counter == self.SEQ_FOR_WIN:
                 return str(self.PLAYER_TWO)
@@ -73,15 +70,12 @@ class Game:
 
     def get_winner(self):
         board_mtx = self.get_board()
-        # CR: you can write for row in board_mtx
         for row in range(self.ROWS_NUM):
             cur_row = board_mtx[row, :]
-            # CR: why calling same method twice?
             if self.search_winner(cur_row):
                 return self.search_winner(cur_row)
         for col in range(self.COLUMN_NUM):
             cur_col = board_mtx[:, col]
-            # CR: why calling same method twice?
             if self.search_winner(cur_col):
                 return self.search_winner(cur_col)
         for diag in range(-(self.ROWS_NUM-1), self.COLUMN_NUM-1):
@@ -96,11 +90,11 @@ class Game:
         board_bool = (board_mtx != self.EMPTY)
         if board_bool.all():
             return self.DRAW
-        # CR: you do not need this, any function returns None by default
         return None
 
+
     def get_player_at(self, row, col):
-        return self.get_board()[row, col]
+        return self.get_board()[row,col]
 
     def get_current_player(self):
         return self.__current_player
@@ -110,62 +104,66 @@ class Game:
 
 
 
-# # test for exception when there is a winner
-# game = Game()
-# # print(game.get_board())
-#
-# game.make_move(1)
-# game.make_move(1)
-# game.make_move(1)
-# game.make_move(2)
-# game.make_move(0)
-# game.make_move(0)
-# game.make_move(0)
-# game.make_move(2)
-# game.make_move(2)
-#
-# print(game.get_board())
 
 
-# # test for exception when there is a winner by diagonal
-# game = Game()
-# # print(game.get_board())
-# game.make_move(1)
-# game.make_move(1)
-# game.make_move(1)
-# game.make_move(2)
-# game.make_move(0)
-# game.make_move(0)
-# game.make_move(2)
-# game.make_move(0)
-# #game.make_move(2)
-# print(game.get_board())
+
+if __name__ == '__main__':
+    # test for exception when there is a winner
+    game = Game()
+    # print(game.get_board())
+
+    game.make_move(1)
+    game.make_move(1)
+    game.make_move(1)
+    game.make_move(2)
+    game.make_move(0)
+    game.make_move(0)
+    game.make_move(0)
+    game.make_move(2)
+    game.make_move(2)
+
+    print(game.get_board())
 
 
-## tester for exception when game over
-# game = Game()
-# print(game.get_board())
-# game.make_move(1)
-# game.make_move(1)
-# game.make_move(1)
-# game.make_move(0)
-# game.make_move(0)
-# game.make_move(0)
-# game.make_move(2)
-# game.make_move(2)
-# game.make_move(2)
-# game.make_move(3)
-# game.make_move(3)
-# game.make_move(3)
-##game.make_move(1)
-# print(game.get_board())
+    # # test for exception when there is a winner by diagonal
+    # game = Game()
+    # # print(game.get_board())
+    # game.make_move(1)
+    # game.make_move(1)
+    # game.make_move(1)
+    # game.make_move(2)
+    # game.make_move(0)
+    # game.make_move(0)
+    # game.make_move(2)
+    # game.make_move(0)
+    # #game.make_move(2)
+    # print(game.get_board())
 
 
-# tester for exception when column full
-# game = Game()
-# print(game.get_board())
-# game.make_move(1)
-# game.make_move(1)
-# game.make_move(1)
-## game.make_move(1)
-# print(game.get_board())
+    ## tester for exception when game over
+    # game = Game()
+    # print(game.get_board())
+    # game.make_move(1)
+    # game.make_move(1)
+    # game.make_move(1)
+    # game.make_move(0)
+    # game.make_move(0)
+    # game.make_move(0)
+    # game.make_move(2)
+    # game.make_move(2)
+    # game.make_move(2)
+    # game.make_move(3)
+    # game.make_move(3)
+    # game.make_move(3)
+    ##game.make_move(1)
+    # print(game.get_board())
+
+
+    # tester for exception when column full
+    # game = Game()
+    # print(game.get_board())
+    # game.make_move(1)
+    # game.make_move(1)
+    # game.make_move(1)
+    ## game.make_move(1)
+    # print(game.get_board())

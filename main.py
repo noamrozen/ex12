@@ -1,5 +1,5 @@
-from game_manager import GameClient, GameServer
-from gui import TkinterGui
+from game_manager import  GameServer
+from gui import Gui
 from communication_protocol import ClientCommunicationHandler, ServerCommunicationHandler
 from communicator import Communicator
 from game import Game
@@ -12,8 +12,8 @@ def main():
     roll = SERVER
     ip = "127.0.0.1"
     port = 8000
-    gui = TkinterGui()
-    communicator = Communicator(root=gui.root, ip=ip, port=port)
+    gui = Gui()
+    communicator = Communicator(root=gui._parent, ip=ip, port=port)
 
     if roll == SERVER:
         communication_handler = ServerCommunicationHandler(communicator)
