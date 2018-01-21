@@ -5,7 +5,7 @@ NOT_YOUR_TURN_ERROR_MSG = "It is not your turn!"
 
 
 class GameManager(object):
-    def __init__(self, gui, communication_manager, game, player):
+    def __init__(self, gui, communication_manager, game, player, ai=None):
         self.gui = gui
         self.communication_manager = communication_manager
         self.game = game
@@ -14,6 +14,7 @@ class GameManager(object):
         self.player = player
         self.opponent = self.__get_opponent(player)
         self.communication_manager.set_client_choice_handler(self.handle_opponent_choice)
+        self.ai = ai
 
     def __get_opponent(self, player):
         return ({self.game.PLAYER_ONE, self.game.PLAYER_TWO} - {player}).pop()
@@ -23,15 +24,16 @@ class GameManager(object):
         self.gui.run()
 
     def end_game(self, winner):
-        self.gui.show_winning(self.game.get_board(), self.game.get_winning_sequence(), winner)
+        winner_color_mapping = {
+            self.game.PLAYER_ONE: self.gui.PLAYER_ONE_COLOR,
+            self.game.PLAYER_TWO: self.gui.PLAYER_TWO_COLOR,
+        }
+        winner_color = winner_color_mapping.get(winner)
+        self.gui.show_winning(self.game.get_board(), self.game.get_winning_sequence(), winner_color)
         # self.communication_manager.send_winner(winner)
         self.gui.shutdown()
 
-    def __switch_players(self):
-        if self.player == self.game.PLAYER_ONE:
-            self.player = self.game.PLAYER_TWO
-        else:
-            self.player = self.game.PLAYER_ONE
+
 
     def handle_choice(self, column):
         if not self.game.get_current_player() == self.player:
@@ -58,4 +60,8 @@ class GameManager(object):
         winner = self.game.get_winner()
         if winner is not None:
             self.end_game(winner)
+
+        if self.ai is not None:
+            self.ai.find_legal_move(self.game, self.gui.press_column)
+
 

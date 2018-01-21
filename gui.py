@@ -38,7 +38,9 @@ class Gui:
         self._columns_list = []
         self._upper_frame = tk.Canvas(self._parent, width=FRAME_W,
                 height=FRAME_H, highlightbackground=U_FRAME, bd=FRAME_BD,
-                                    highlightthickness=TK,bg=BG_COLOR)
+                                      highlightthickness=TK, bg=BG_COLOR)
+
+        self.__buttons = []
         self._upper_frame.pack()
         for col in reversed(list(range(self.num_col))):
             button = tk.Button(self._upper_frame, command=lambda c=col:
@@ -46,6 +48,8 @@ class Gui:
             button.configure(width=BT_W, activebackground=TITLE_BG,
                              bg=BG_COLOR, borderwidth=TK)
             button.pack(side=BUTTONS_SIDE,  fill=FILL_BOTH)
+            self.__buttons.append(button)
+
         for col in range(self.num_col):
             self._columns_list.append(tk.Canvas(self._parent, width=COL_W,
                     height=COL_H,highlightbackground=BG_COLOR,
@@ -62,6 +66,9 @@ class Gui:
 
     def set_collumn_choice_handler(self, handler):
         self.__game_handler = handler
+
+    def press_column(self, column):
+        self.__buttons[column].invoke()
 
     def _marking_winning_oval(self, coord, color):
         self._columns_list[coord[1]].create_oval(INIT_X0, INIT_X0
@@ -93,7 +100,6 @@ class Gui:
         else:
             text = LOSER_TEXT
         messagebox.showinfo(WINNER_TITLE, text)
-        self.shutdown()
 
     def shutdown(self):
         self._parent.destroy()

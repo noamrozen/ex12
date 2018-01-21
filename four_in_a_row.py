@@ -4,6 +4,7 @@ AI = "ai"
 NO_IP_INPUT_SIZE = 3
 AI_RECURSION_DEPTH = 2
 ERROR_ARGUMENTS = "arguments program Illegal"
+PORT_NOT_NUM_ERR = "received port is not a number"
 MAX_PORT = 65535
 
 from ai import MinMaxAi
@@ -21,6 +22,10 @@ def main(args):
         script, is_human, port, ip = args
     else:
         raise ValueError(ERROR_ARGUMENTS)
+    try:
+        port = int(port)
+    except TypeError:
+        raise ValueError(PORT_NOT_NUM_ERR)
     if port > MAX_PORT:
         raise ValueError(ERROR_ARGUMENTS)
     if ip is None:

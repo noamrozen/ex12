@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 
-class Game:
+class Game(object):
 
     ROWS_NUM = 6
     COLUMN_NUM = 7
@@ -19,6 +19,7 @@ class Game:
         # initiating the board with "-1"
         self.__board_mtx = np.full((self.ROWS_NUM,self.COLUMN_NUM),self.EMPTY)
         self.__win_seq = []
+        self.__moves_stack = []
 
     def get_winning_sequence(self):
         return self.__win_seq
@@ -37,12 +38,15 @@ class Game:
         player = self.get_current_player()
         board_mtx = self.get_board()
         board_column = board_mtx[:, column]
-        if self.get_winner() is not None:
-            raise Exception(self.ILLEGAL_MOVE)
+        if self.get_winner():
+            raise ValueError("the game is over")
+            # raise Exception(self.ILLEGAL_MOVE)
         if not self.__get_lowest_empty(board_column):
-            raise Exception(self.ILLEGAL_MOVE)
+            raise ValueError("column is full!")
+            # raise Exception(self.ILLEGAL_MOVE)
         if column < 0 or column > self.COLUMN_NUM:
-            raise Exception(self.ILLEGAL_MOVE)
+            raise ValueError("column %s out of range" % column)
+            # raise Exception(self.ILLEGAL_MOVE)
         else:
             index = int(self.__get_lowest_empty(board_column))
             self.__board_mtx[index, column] = player
@@ -51,6 +55,8 @@ class Game:
             else:
                 self.__current_player = self.PLAYER_ONE
 
+            self.__moves_stack.append((index, column))
+
     def _search_winner(self, list):
         player_one_seq = []
         player_two_seq = []
@@ -58,14 +64,28 @@ class Game:
             if list[i] == self.PLAYER_ONE:
                 player_one_seq.append(i)
                 player_two_seq = []
-            if list[i] == self.PLAYER_TWO:
+            elif list[i] == self.PLAYER_TWO:
                 player_two_seq.append(i)
                 player_one_seq = []
+            else:
+                player_one_seq = []
+                player_two_seq = []
             if len(player_one_seq) == self.SEQ_FOR_WIN:
                 return self.PLAYER_ONE, player_one_seq
             if len(player_two_seq) == self.SEQ_FOR_WIN:
                 return self.PLAYER_TWO, player_two_seq
         return None, None
+
+    def __switch_players(self):
+        if self.__current_player == self.PLAYER_ONE:
+            self.__current_player = self.PLAYER_TWO
+        else:
+            self.__current_player = self.PLAYER_ONE
+
+    def unmake_move(self):
+        last_move = self.__moves_stack.pop()
+        self.__board_mtx[last_move] = self.EMPTY
+        self.__switch_players()
 
 
     def _search_row(self, board_mtx):
@@ -147,6 +167,12 @@ class Game:
         board_bool = (board_mtx != self.EMPTY)
         if board_bool.all():
             return self.DRAW
+        return None
+
+    def is_full(self):
+        board_bool = (self.__board_mtx != self.EMPTY)
+        return board_bool.all()
+
 
     def get_player_at(self, row, col):
         return self.get_board()[row,col]
