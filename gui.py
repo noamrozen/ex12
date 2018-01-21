@@ -13,12 +13,17 @@ class Gui:
     PLAYER_TWO_COLOR = "lightgoldenrod1"
     PLAYER_TWO = 1
 
-    def __init__(self,row_num, col_num):
+    YOU_WON = 1
+    YOU_LOST = -1
+    DRAW = 0
+
+    def __init__(self,row_num, col_num, player_color):
         # super(TkinterGui, self).__init__()
         self._parent = tk.Tk()
         self.num_row = row_num
         self.num_col = col_num
         self.__place_widgets()
+        self.__player_color = player_color
 
 
 
@@ -58,28 +63,36 @@ class Gui:
     def set_collumn_choice_handler(self, handler):
         self.__game_handler = handler
 
-    def show_winning(self, board, list_coord, winner):
+    def _marking_winning_oval(self, coord, color):
+        self._columns_list[coord[1]].create_oval(INIT_X0, INIT_X0
+                                                 + coord[0] * OVAL_WIDTH,
+                                                 INIT_X1, INIT_Y1 +
+                                                 coord[0] * OVAL_WIDTH,
+                                                 width=WIN_WIDTH,
+                                                 fill=color)
+        self._columns_list[coord[1]].pack()
+
+    def show_winning(self, board, list_coord, winner_color):
         self.output_board(board)
-        if winner == self.PLAYER_ONE:
-            winner_color = self.PLAYER_ONE_COLOR
-        elif winner == self.PLAYER_TWO:
-            winner_color = self.PLAYER_TWO_COLOR
+        if winner_color is not None:
+            for coord in list_coord:
+                # creating the winning ovals on the board with perimeter
+                self._marking_winning_oval(coord, winner_color)
+            self._output_winner(winner_color)
         else:
             self.output_draw()
             return
-        for coord in list_coord:
-            self._columns_list[coord[1]].create_oval(INIT_X0, INIT_X0
-                + coord[0] * OVAL_WIDTH, INIT_X1, INIT_Y1 +
-                coord[0] * OVAL_WIDTH, width=WIN_WIDTH, fill=winner_color)
-            self._columns_list[coord[1]].pack()
-        self._output_winner(winner)
 
     @staticmethod
     def output_draw():
         messagebox.showinfo(DREW_TITLE, DREW_TEXT)
 
-    def _output_winner(self, winner):
-        messagebox.showinfo(WINNER_TITLE, WINNER_TEXT % winner)
+    def _output_winner(self, winner_color):
+        if winner_color == self.__player_color:
+            text = WINNER_TEXT
+        else:
+            text = LOSER_TEXT
+        messagebox.showinfo(WINNER_TITLE, text)
         self.shutdown()
 
     def shutdown(self):
