@@ -3,6 +3,8 @@ from gui import Gui
 from communication_protocol import SocketCommunicatorHandler
 from communicator import Communicator
 from game import Game
+import tkinter as tk
+import time
 
 SERVER = "server"
 CLIENT = "client"
@@ -20,10 +22,10 @@ def main():
     communication_handler = SocketCommunicatorHandler(communicator)
     game_manager = GameManager(gui, communication_handler, Game(), player=Game.PLAYER_ONE)
 
-    while not communicator.is_connected():
-        pass
-        # message box saying "waiting for connection..."
-    # shutdown message box
+    # while not communicator.is_connected():
+    #     tk.messagebox.showinfo("", "waiting for connection...")
+    #     communicator.connect()
+    # tk.destroy()
     game_manager.run()
 
 

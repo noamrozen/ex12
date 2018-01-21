@@ -10,7 +10,7 @@ CLIENT = "client"
 
 def main():
     roll = SERVER
-    ip = "172.29.106.52"
+    ip = "172.29.102.107"
     port = 8000
     gui = Gui(Game.ROWS_NUM, Game.COLUMN_NUM)
     communicator = Communicator(root=gui._parent, ip=ip, port=port)
