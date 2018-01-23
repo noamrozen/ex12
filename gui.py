@@ -1,11 +1,6 @@
 import tkinter as tk
-from communicator import Communicator
-import numpy as np
 from tkinter import messagebox
 from gui_config import *
-
-
-#resizeable
 
 class Gui:
     PLAYER_ONE = 0
@@ -70,6 +65,10 @@ class Gui:
     def __set_collumn_choice_handler(self, column):
         self.__game_handler(column)
         # self._communicator.send_message(column)
+
+    @property
+    def tk_root(self):
+        return self._parent
 
     def set_collumn_choice_handler(self, handler):
         self.__game_handler = handler

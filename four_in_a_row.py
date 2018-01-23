@@ -1,4 +1,11 @@
 import sys
+from block_win_ai import BlockWinAI
+from gui import Gui
+from game import Game
+from communicator import Communicator
+from communication_protocol import SocketCommunicatorHandler
+from game_manager import GameManager
+
 HUMAN = "human"
 AI = "ai"
 NO_IP_INPUT_SIZE = 3
@@ -7,19 +14,12 @@ ERROR_ARGUMENTS = "arguments program Illegal"
 PORT_NOT_NUM_ERR = "received port is not a number"
 MAX_PORT = 65535
 
-from block_win_ai import BlockWinAI
-from gui import Gui
-from game import Game
-from communicator import Communicator
-from communication_protocol import SocketCommunicatorHandler
-from game_manager import GameManager
-
-def main(args):
+def parse_input(input_args):
     ip = None
-    if len(args) == NO_IP_INPUT_SIZE:
-        script, is_human, port = args
-    elif len(args) == NO_IP_INPUT_SIZE + 1:
-        script, is_human, port, ip = args
+    if len(input_args) == NO_IP_INPUT_SIZE:
+        script, is_human, port = input_args
+    elif len(input_args) == NO_IP_INPUT_SIZE + 1:
+        script, is_human, port, ip = input_args
     else:
         raise ValueError(ERROR_ARGUMENTS)
     try:
@@ -28,6 +28,10 @@ def main(args):
         raise ValueError(PORT_NOT_NUM_ERR)
     if port > MAX_PORT:
         raise ValueError(ERROR_ARGUMENTS)
+    return is_human, port, ip
+
+def main(input_args):
+    is_human, port, ip = parse_input(input_args)
     if ip is None:
         color = Gui.PLAYER_ONE_COLOR
         player = Game.PLAYER_ONE
