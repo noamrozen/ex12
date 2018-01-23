@@ -7,7 +7,7 @@ ERROR_ARGUMENTS = "arguments program Illegal"
 PORT_NOT_NUM_ERR = "received port is not a number"
 MAX_PORT = 65535
 
-from ai import MinMaxAi
+from block_win_ai import BlockWinAI
 from gui import Gui
 from game import Game
 from communicator import Communicator
@@ -34,16 +34,21 @@ def main(args):
     else:
         color = Gui.PLAYER_TWO_COLOR
         player = Game.PLAYER_TWO
-    gui = Gui(Game.ROWS_NUM, Game.COLUMN_NUM, color)
+
+    if is_human == AI:
+        ai = BlockWinAI(player)
+        is_ai = True
+    elif is_human == HUMAN:
+        ai = None
+        is_ai = False
+    else:
+        raise ValueError(ERROR_ARGUMENTS)
+
+    gui = Gui(Game.ROWS_NUM, Game.COLUMN_NUM, color, is_ai)
     communicator = Communicator(root=gui._parent, ip=ip, port=port)
     communicator.connect()
     communication_handler = SocketCommunicatorHandler(communicator)
-    if is_human == AI:
-        ai = MinMaxAi(player, AI_RECURSION_DEPTH)
-    elif is_human == HUMAN:
-        ai = None
-    else:
-        raise ValueError(ERROR_ARGUMENTS)
+
     game_manager = GameManager(gui, communication_handler, Game(),
                                player, ai)
     game_manager.run()

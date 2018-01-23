@@ -21,7 +21,10 @@ class GameManager(object):
 
     def run(self):
         self.gui.set_collumn_choice_handler(self.handle_choice)
+        if self.ai and self.game.get_current_player() == self.player:
+            self.run_ai()
         self.gui.run()
+
 
     def end_game(self, winner):
         winner_color_mapping = {
@@ -30,8 +33,8 @@ class GameManager(object):
         }
         winner_color = winner_color_mapping.get(winner)
         self.gui.show_winning(self.game.get_board(), self.game.get_winning_sequence(), winner_color)
-        # self.communication_manager.send_winner(winner)
-        self.gui.shutdown()
+        for column in range(self.game.COLUMN_NUM):
+            self.gui.disable_button(column)
 
 
 
@@ -60,8 +63,18 @@ class GameManager(object):
         winner = self.game.get_winner()
         if winner is not None:
             self.end_game(winner)
+            return
 
         if self.ai is not None:
-            self.ai.find_legal_move(self.game, self.gui.press_column)
+            self.run_ai()
+
+    def run_ai(self):
+        def ai_press_column(column):
+            self.gui.enable_button(column)
+            self.gui.press_column(column)
+            self.gui.disable_button(column)
+        self.ai.find_legal_move(self.game, ai_press_column)
+
+
 
 

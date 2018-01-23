@@ -9,7 +9,7 @@ from gui_config import *
 
 class Gui:
     PLAYER_ONE = 0
-    PLAYER_ONE_COLOR = "indian red1"
+    PLAYER_ONE_COLOR = "blue"
     PLAYER_TWO_COLOR = "lightgoldenrod1"
     PLAYER_TWO = 1
 
@@ -17,13 +17,19 @@ class Gui:
     YOU_LOST = -1
     DRAW = 0
 
-    def __init__(self,row_num, col_num, player_color):
-        # super(TkinterGui, self).__init__()
+    def __init__(self,row_num, col_num, player_color, is_ai):
         self._parent = tk.Tk()
         self.num_row = row_num
         self.num_col = col_num
-        self.__place_widgets()
         self.__player_color = player_color
+        self._parent.resizable(width=False, height=False)
+
+        if is_ai:
+            self.__buttons_state = tk.DISABLED
+        else:
+            self.__buttons_state = tk.NORMAL
+        self.__place_widgets()
+
 
 
 
@@ -46,7 +52,8 @@ class Gui:
             button = tk.Button(self._upper_frame, command=lambda c=col:
             self.__set_collumn_choice_handler(c))
             button.configure(width=BT_W, activebackground=TITLE_BG,
-                             bg=BG_COLOR, borderwidth=TK)
+                             bg=BG_COLOR, borderwidth=TK, state =
+                             self.__buttons_state)
             button.pack(side=BUTTONS_SIDE,  fill=FILL_BOTH)
             self.__buttons.append(button)
 
@@ -69,6 +76,12 @@ class Gui:
 
     def press_column(self, column):
         self.__buttons[column].invoke()
+
+    def disable_button(self, column):
+        self.__buttons[column].config(state=tk.DISABLED)
+
+    def enable_button(self, column):
+        self.__buttons[column].config(state=tk.NORMAL)
 
     def _marking_winning_oval(self, coord, color):
         self._columns_list[coord[1]].create_oval(INIT_X0, INIT_X0
