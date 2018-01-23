@@ -4,20 +4,22 @@ NOT_YOUR_TURN_ERROR_MSG = "It is not your turn!"
 
 class GameManager(object):
     def __init__(self, gui, communication_manager, game, player, ai=None):
+        # game elements handlers
         self.gui = gui
         self.communication_manager = communication_manager
         self.game = game
+        self.ai = ai
 
+        # managing attributes
         self.player = player
         self.opponent = self.__get_opponent(player)
-        self.communication_manager.set_client_choice_handler(self.handle_opponent_choice)
-        self.ai = ai
 
     def __get_opponent(self, player):
         return ({self.game.PLAYER_ONE, self.game.PLAYER_TWO} - {player}).pop()
 
     def run(self):
-        self.gui.set_collumn_choice_handler(self.handle_choice)
+        self.communication_manager.set_client_choice_handler(self.handle_opponent_choice)
+        self.gui.set_column_choice_handler(self.handle_choice)
         if self.ai and self.game.get_current_player() == self.player:
             self.run_ai()
         self.gui.run()

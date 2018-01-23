@@ -3,23 +3,18 @@ import numpy as np
 
 
 class Game(object):
-    ##############################
-    #       Game configuration   #
-    ##############################
+    # Game configuration constants
     ROWS_NUM = 6
     COLUMN_NUM = 7
     SEQ_FOR_WIN = 4
 
-    ###############################
-    #       Data Representation   #
-    ###############################
+    # Data Representation constants
     PLAYER_ONE = 0
     PLAYER_TWO = 1
     DRAW = 2
     EMPTY = -1
-    ############################
-    #       Messages           #
-    ############################
+
+    # Messages constants
     ILLEGAL_MOVE = "Illegal move"
 
     def __init__(self):
@@ -33,16 +28,6 @@ class Game(object):
 
     def get_winning_sequence(self):
         return self.__win_sequence
-
-    @staticmethod
-    def __get_lowest_empty(board_column):
-        if board_column[0] != Game.EMPTY:
-            # the column is full
-            return None
-        for index in range(len(board_column)):
-            if board_column[index] != Game.EMPTY:
-                return index - 1
-        return len(board_column)-1
 
     def make_move(self, column):
         player = self.get_current_player()
@@ -108,18 +93,28 @@ class Game(object):
             return self.DRAW
         return None
 
+    @staticmethod
+    def __get_lowest_empty(board_column):
+        if board_column[0] != Game.EMPTY:
+            # the column is full
+            return None
+        for index in range(len(board_column)):
+            if board_column[index] != Game.EMPTY:
+                return index - 1
+        return len(board_column) - 1
+
     def _search_row(self, board_mtx):
-        for row in board_mtx:
+        for row_index, row in enumerate(board_mtx):
             winner, index_list = self._search_winner(row)
             if winner is not None:
-                self.__win_sequence = [(row, i) for i in index_list]
+                self.__win_sequence = [(row_index, i) for i in index_list]
                 return winner
 
     def _search_col(self, board_mtx):
-        for column in board_mtx.T:
+        for column_index, column in enumerate(board_mtx.T):
             winner, index_list = self._search_winner(column)
             if winner is not None:
-                self.__win_sequence = [(i, column) for i in index_list]
+                self.__win_sequence = [(i, column_index) for i in index_list]
                 return winner
 
     def _search_diagonal(self, board_mtx):
@@ -176,12 +171,6 @@ class Game(object):
             self.__current_player = self.PLAYER_TWO
         else:
             self.__current_player = self.PLAYER_ONE
-
-
-
-
-
-
 
 
 # # # test for exception when there is a winner

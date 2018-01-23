@@ -6,13 +6,21 @@ from communicator import Communicator
 from communication_protocol import SocketCommunicatorHandler
 from game_manager import GameManager
 
+# input representation
 HUMAN = "human"
 AI = "ai"
+
+# input validation
 NO_IP_INPUT_SIZE = 3
+MAX_PORT = 65535
+
+# running configuration
 AI_RECURSION_DEPTH = 2
+
+# error messages
 ERROR_ARGUMENTS = "arguments program Illegal"
 PORT_NOT_NUM_ERR = "received port is not a number"
-MAX_PORT = 65535
+
 
 def parse_input(input_args):
     ip = None
@@ -29,6 +37,7 @@ def parse_input(input_args):
     if port > MAX_PORT:
         raise ValueError(ERROR_ARGUMENTS)
     return is_human, port, ip
+
 
 def main(input_args):
     is_human, port, ip = parse_input(input_args)
@@ -49,7 +58,7 @@ def main(input_args):
         raise ValueError(ERROR_ARGUMENTS)
 
     gui = Gui(Game.ROWS_NUM, Game.COLUMN_NUM, color, is_ai)
-    communicator = Communicator(root=gui._parent, ip=ip, port=port)
+    communicator = Communicator(root=gui.tk_root, ip=ip, port=port)
     communicator.connect()
     communication_handler = SocketCommunicatorHandler(communicator)
 
